@@ -60,7 +60,9 @@ testReadWriteEntry = TestCase $ do
   writeEntry [] entry
   setCurrentDirectory ".."
   entry' <- readEntry [] "test-temp/zip-archive.cabal"
-  let entry'' = entry' { eRelativePath = eRelativePath entry, eLastModified = eLastModified entry }
+  let entry'' = entry' { eRelativePath    = eRelativePath entry
+                       , eRawRelativePath = eRawRelativePath entry
+                       , eLastModified    = eLastModified entry }
   assertEqual "for readEntry -> writeEntry -> readEntry" entry entry''
 
 testAddFilesOptions = TestCase $ do

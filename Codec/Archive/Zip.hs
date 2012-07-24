@@ -95,6 +95,7 @@ data Archive = Archive
 -- | Representation of an archived file, including content and metadata.
 data Entry = Entry
                { eRelativePath            :: FilePath            -- ^ Relative path, using '/' as separator
+               , eRawRelativePath         :: B.ByteString        -- ^ Relative raw path
                , eCompressionMethod       :: CompressionMethod   -- ^ Compression method
                , eLastModified            :: Integer             -- ^ Modification time (seconds since unix epoch)
                , eCRC32                   :: Word32              -- ^ CRC32 checksum
@@ -178,6 +179,7 @@ toEntry path modtime contents =
            else (Deflate, compressedData, compressedSize)
       crc32 = CRC32.crc32 contents
   in  Entry { eRelativePath            = path
+            , eRawRelativePath         = fromString path
             , eCompressionMethod       = compressionMethod
             , eLastModified            = modtime
             , eCRC32                   = crc32
@@ -608,6 +610,7 @@ getFileHeader locals = do
                          Nothing -> fail $ "Unable to find data at offset " ++ show relativeOffset
        return $ Just $ Entry
                  { eRelativePath            = toString fileName
+                 , eRawRelativePath         = fileName
                  , eCompressionMethod       = compressionMethod
                  , eLastModified            = msDOSDateTimeToEpochTime $
                                               MSDOSDateTime { msDOSDate = lastModFileDate,
